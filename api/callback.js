@@ -1,6 +1,3 @@
-// /api/auth/strava_callback.js
-import { saveUser } from '../../db/queries.js';
-
 export default async function handler(req, res) {
   const { code } = req.query;
 
@@ -23,16 +20,7 @@ export default async function handler(req, res) {
 
     const tokenData = await tokenResponse.json();
 
-    // Save to SQL
-    await saveUser({
-      strava_id: tokenData.athlete.id,
-      firstname: tokenData.athlete.firstname,
-      lastname: tokenData.athlete.lastname,
-      profile_pic: tokenData.athlete.profile,
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      token_expires: new Date(Date.now() + tokenData.expires_in * 1000)
-    });
+    console.log("OAuth successful for user:", tokenData.athlete.firstname, tokenData.athlete.lastname);
 
     // Redirect to Flutter app (deep link)
     res.redirect(`myapp://login_success?token=${tokenData.access_token}`);
