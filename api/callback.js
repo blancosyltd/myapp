@@ -2,11 +2,12 @@ export default async function handler(req, res) {
   const { code } = req.query;
 
   if (!code) {
-    return res.status(400).json({ error: "No code provided" });
+    return res.status(200).json({ message: "MyApp API - Ready" });
   }
 
   try {
-    // Exchange code for access token
+    console.log("Root callback received code:", code);
+
     const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -19,14 +20,12 @@ export default async function handler(req, res) {
     });
 
     const tokenData = await tokenResponse.json();
+    console.log("Token received, redirecting to app");
 
-    console.log("OAuth successful for user:", tokenData.athlete.firstname, tokenData.athlete.lastname);
-
-    // Redirect to Flutter app (deep link)
     res.redirect(`myapp://login_success?token=${tokenData.access_token}`);
 
   } catch (err) {
-    console.error(err);
+    console.error("Root callback error:", err);
     res.status(500).json({ error: "OAuth failed" });
   }
 }
